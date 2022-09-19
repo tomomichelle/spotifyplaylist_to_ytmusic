@@ -99,19 +99,26 @@ class YTMusicTransfer:
         except:
             raise Exception("Playlist title not found in playlists")
 
+    def get_library_playlists(self):
+        return self.api.get_library_playlists(10000)
+
     def remove_songs(self, playlistId):
         items = self.api.get_playlist(playlistId, 10000)['tracks']
         if len(items) > 0:
             self.api.remove_playlist_items(playlistId, items)
 
-    def remove_playlists(self, pattern):
+    def remove_playlists(self, pattern, confirm=False):
         playlists = self.api.get_library_playlists(10000)
         p = re.compile("{0}".format(pattern))
         matches = [pl for pl in playlists if p.match(pl['title'])]
         print("The following playlists will be removed:")
         print("\n".join([pl['title'] for pl in matches]))
-        print("Please confirm (y/n):")
+        if confirm:
+            [self.api.delete_playlist(pl['playlistId']) for pl in matches]
+            print(str(len(matches)) + " playlists deleted.")
+            return
 
+        print("Please confirm (y/n):")
         choice = input().lower()
         if choice[:1] == 'y':
             [self.api.delete_playlist(pl['playlistId']) for pl in matches]
@@ -128,8 +135,12 @@ def get_args():
     parser.add_argument("-i", "--info", type=str, help="Provide description information for the YouTube Music Playlist. Default: Spotify playlist description")
     parser.add_argument("-d", "--date", action='store_true', help="Append the current date to the playlist name")
     parser.add_argument("-p", "--public", action='store_true', help="Make the playlist public. Default: private")
+    parser.add_argument("-ul", "--unlisted", action='store_true', help="Make the playlist unlisted. Default: private")
     parser.add_argument("-r", "--remove", action='store_true', help="Remove playlists with specified regex pattern.")
     parser.add_argument("-a", "--all", action='store_true', help="Transfer all public playlists of the specified user (Spotify User ID).")
+    parser.add_argument("-au", "--allupdate", action='store_true', help="Delete all playlists and udpate them with entries from the Spotify playlist.")
+    parser.add_argument("-ra", "--removeall", action='store_true', help="Delete all playlists.")
+    parser.add_argument("-ru", "--removeuser", action='store_true', help="Delete all playlists created by the Spotify user.")
     return parser.parse_args()
 
 
@@ -137,19 +148,38 @@ def main():
     args = get_args()
     ytmusic = YTMusicTransfer()
 
-    if args.all:
+    if args.removeall:
+        for p in ytmusic.get_library_playlists():
+            ytmusic.remove_playlists(p['title'], confirm=True)
+        return
+
+    if args.removeuser:
+        s = Spotify()
+        pl = s.getUserPlaylists(args.playlist)
+        for p in pl:
+            ytmusic.remove_playlists(p['name'], confirm=True)
+        return
+
+    if args.all or args.allupdate:
         s = Spotify()
         pl = s.getUserPlaylists(args.playlist)
         print(str(len(pl)) + " playlists found. Starting transfer...")
         count = 1
         for p in pl:
+            if args.allupdate:
+                ytmusic.remove_playlists(p['name'], confirm=True)
             print("Playlist " + str(count) + ": " + p['name'])
             count = count + 1
             try:
                 playlist = Spotify().getSpotifyPlaylist(p['external_urls']['spotify'])
                 videoIds = ytmusic.search_songs(playlist['tracks'])
+                privacy_status = 'PRIVATE'
+                if args.public:
+                    privacy_status = 'PUBLIC'
+                elif args.unlisted:
+                    privacy_status = 'UNLISTED'
                 playlist_id = ytmusic.create_playlist(p['name'], p['description'],
-                                                    'PUBLIC' if args.public else 'PRIVATE',
+                                                    privacy_status,
                                                     videoIds)
                 print(playlist_id)
             except Exception as ex:
