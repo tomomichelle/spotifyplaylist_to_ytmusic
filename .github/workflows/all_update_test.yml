@@ -1,0 +1,30 @@
+name: update all playlists test
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  run-python:
+    name: set up python and run YouTube.py
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8.13'
+      - name: pip install packages
+        run: pip3 install -r requirements
+      - name: setup settings.ini
+        env:
+          SETTINGS_INI: ${{ secrets.SETTINGS_INI }}
+        run: |
+          touch settins.ini
+          echo SETTINGS_INI > settings.ini
+      - name: run YouTube.py
+        run: python3 YouTube.py --allupdate spotify
