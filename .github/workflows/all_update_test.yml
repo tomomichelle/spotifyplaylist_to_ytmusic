@@ -25,6 +25,6 @@ jobs:
           SETTINGS_INI: ${{ secrets.SETTINGS_INI }}
         run: |
           touch settins.ini
-          echo $SETTINGS_INI > settings.ini
+          echo "$SETTINGS_INI" > settings.ini
       - name: run YouTube.py
         run: python3 YouTube.py --allupdate spotify
