@@ -13,7 +13,7 @@ class Spotify:
 
     def getSpotifyPlaylistWithRegex(self, regex, query, owner):
         playlist = None
-        pl = self.api.search(query, type="playlist", limit=50)["playlists"]['items']
+        pl = self.api.search(query, type="playlist", limit=50, market='US')["playlists"]['items']
         for p in pl:
             r = re.compile(regex).findall(p["name"])
             if r and p["owner"]["id"] == owner:
