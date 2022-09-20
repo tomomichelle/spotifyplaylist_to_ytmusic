@@ -166,6 +166,7 @@ def get_args():
     parser.add_argument("-rx", "--regex", type=str, help="Delete all playlists and update them with regex.")
     parser.add_argument("-ra", "--removeall", action='store_true', help="Delete all playlists.")
     parser.add_argument("-ru", "--removeuser", action='store_true', help="Delete all playlists created by the Spotify user.")
+    parser.add_argument("-prx", "--playlist_regex", type=str, help="Make the playlist with regex and query.: --playlist_regex `regex` `query` (owner of playlist is set in `playlist`)", nargs=2)
     return parser.parse_args()
 
 
@@ -229,11 +230,16 @@ def main():
     date = ""
     if args.date:
         date = " " + datetime.today().strftime('%m/%d/%Y')
+    playlist = None
     try:
-        playlist = Spotify().getSpotifyPlaylist(args.playlist)
+        if args.playlist_regex:
+            playlist = Spotify().getSpotifyPlaylistWithRegex(args.playlist_regex[0], args.playlist_regex[1], args.playlist)
+        else:
+            playlist = Spotify().getSpotifyPlaylist(args.playlist)
     except Exception as ex:
         print("Could not get Spotify playlist. Please check the playlist link.\n Error: " + repr(ex))
         return
+
 
     name = args.name + date if args.name else playlist['name'] + date
     info = playlist['description'] if (args.info is None) else args.info
@@ -246,7 +252,12 @@ def main():
 
     else:
         videoIds = ytmusic.search_songs(playlist['tracks'])
-        playlistId = ytmusic.create_playlist(name, info, 'PUBLIC' if args.public else 'PRIVATE', videoIds)
+        privacy_status = "PRIVATE"
+        if args.public:
+            privacy_status = "PUBLIC"
+        elif args.unlisted:
+            privacy_status = "UNLISTED"
+        playlistId = ytmusic.create_playlist(name, info, privacy_status, videoIds)
 
         print("Success: created playlist \"" + name + "\"\n" +
               "https://music.youtube.com/playlist?list=" + playlistId)
