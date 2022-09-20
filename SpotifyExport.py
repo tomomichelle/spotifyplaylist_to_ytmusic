@@ -15,7 +15,6 @@ class Spotify:
         playlist = None
         pl = self.api.search(query, type="playlist", limit=50)["playlists"]['items']
         for p in pl:
-            regex = re.compile(regex).findall(p["name"])
             if regex and p["owner"]["id"] == owner:
                 playlist = self.getSpotifyPlaylist(p['external_urls']['spotify'])
                 break
