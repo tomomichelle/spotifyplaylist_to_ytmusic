@@ -2,6 +2,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 import spotipy
 import settings
 import html
+import re
 
 
 class Spotify:
@@ -9,6 +10,18 @@ class Spotify:
         conf = settings['spotify']
         client_credentials_manager = SpotifyClientCredentials(client_id=conf['client_id'], client_secret=conf['client_secret'])
         self.api = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+    def getSpotifyPlaylistWithRegex(self, regex, query, owner):
+        playlist = None
+        pl = self.api.search(query, type="playlist", limit=50)["playlists"]['items']
+        for p in pl:
+            regex = re.compile(regex).findall(p["name"])
+            if regex and p["owner"]["id"] == owner:
+                playlist = self.getSpotifyPlaylist(p['external_urls']['spotify'])
+                break
+        if playlist is None:
+            raise RuntimeError(f"Could not find the playlist (regex:{args.playlist_regex}, owner:{args.playlist})")
+        return playlist
 
     def getSpotifyPlaylist(self, url):
         playlistId = get_id_from_url(url)
