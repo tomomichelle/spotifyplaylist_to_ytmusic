@@ -38,4 +38,16 @@ jobs:
           python3 YouTube.py --unlisted --playlist_update --playlist_regex "Top 50.*USA" "Top 50 USA" spotify
           # Top 50 in UK
           python3 YouTube.py --unlisted --playlist_update --playlist_regex "Top 50.*United Kingdom" "Top 50 United Kingdom" spotify
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DX6ntWKaOqGAp
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DXafb0IuPwJyF
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DX5wgKYQVRARv
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DX5J7FIl4q56G
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DXbR32Ldau7WM
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DWYXBm3qy96SP
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DWWOaP4H0w5b0
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DX7k3T9O9bscd
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZEVXbcVuCTDHsVis
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DWUZMtnnlvJ9p
+          python3 YouTube.py --unlisted https://open.spotify.com/playlist/37i9dQZF1DXcF6B6QPhFDv
+
 
