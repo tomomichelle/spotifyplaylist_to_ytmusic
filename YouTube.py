@@ -235,7 +235,7 @@ def main():
     try:
         if args.playlist_regex:
             if args.playlist_update:
-                ytmusic.remove_playlists(args.playlist_regex[0])
+                ytmusic.remove_playlists(args.playlist_regex[0], confirm=True)
             playlist = Spotify().getSpotifyPlaylistWithRegex(args.playlist_regex[0], args.playlist_regex[1], args.playlist)
         else:
             playlist = Spotify().getSpotifyPlaylist(args.playlist)
