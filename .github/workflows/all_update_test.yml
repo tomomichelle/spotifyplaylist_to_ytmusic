@@ -27,4 +27,15 @@ jobs:
           touch settins.ini
           echo "$SETTINGS_INI" > settings.ini
       - name: run YouTube.py
-        run: python3 YouTube.py --allupdate spotify
+        run: |
+          # Today's
+          python3 YouTube.py --unlisted --playlist_regex "Today.*Top Hits" "Today Top Hits" spotify
+          # Top 50 in Japan
+          python3 YouTube.py --unlisted --playlist_regex "Top 50.*Japan" "Top 50 Japan" spotify
+          # Top 50 in Global
+          python3 YouTube.py --unlisted --playlist_regex "Top 50.*Global" "Top 50 Global" spotify
+          # Top 50 in USA
+          python3 YouTube.py --unlisted --playlist_regex "Top 50.*USA" "Top 50 USA" spotify
+          # Top 50 in UK
+          python3 YouTube.py --unlisted --playlist_regex "Top 50.*United Kingdom" "Top 50 United Kingdom" spotify
+
