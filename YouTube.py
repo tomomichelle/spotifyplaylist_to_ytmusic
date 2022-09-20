@@ -167,6 +167,7 @@ def get_args():
     parser.add_argument("-ra", "--removeall", action='store_true', help="Delete all playlists.")
     parser.add_argument("-ru", "--removeuser", action='store_true', help="Delete all playlists created by the Spotify user.")
     parser.add_argument("-prx", "--playlist_regex", type=str, help="Make the playlist with regex and query.: --playlist_regex `regex` `query` (owner of playlist is set in `playlist`)", nargs=2)
+    parser.add_argument("-pu", "--playlist_update", action='store_true', help="Delete all entries in the provided Google Play Music playlist and update the playlist with entries from the Spotify playlist when --playlist_regex is used.")
     return parser.parse_args()
 
 
@@ -233,6 +234,8 @@ def main():
     playlist = None
     try:
         if args.playlist_regex:
+            if args.playlist_update:
+                ytmusic.remove_playlists(args.playlist_regex[0])
             playlist = Spotify().getSpotifyPlaylistWithRegex(args.playlist_regex[0], args.playlist_regex[1], args.playlist)
         else:
             playlist = Spotify().getSpotifyPlaylist(args.playlist)
